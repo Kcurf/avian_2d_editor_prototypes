@@ -462,6 +462,7 @@ fn update_anchor_preview_visualization<Config: GizmoConfigGroup>(
     anchor_state: Res<AnchorCreationState>,
     time: Res<Time>,
     collider_query: Query<&GlobalTransform, With<Collider>>,
+    theme_colors: Res<crate::ui::theme_colors::EditorThemeColors>,
 ) {
     // Only show preview when in preview mode
     if anchor_state.preview_mode {
@@ -476,7 +477,7 @@ fn update_anchor_preview_visualization<Config: GizmoConfigGroup>(
             };
 
             // Draw preview anchor
-            draw_preview_anchor(&mut gizmos, preview_pos, time.elapsed_secs());
+            draw_preview_anchor(&mut gizmos, preview_pos, time.elapsed_secs(), &theme_colors);
 
             // Draw connection line to collider origin if we have a collider
             if let Some(collider_entity) = anchor_state.preview_collider {

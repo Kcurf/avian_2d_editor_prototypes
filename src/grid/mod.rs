@@ -6,6 +6,7 @@ use bevy::render::view::{
     NoFrustumCulling, VisibilityClass, VisibleEntities, add_visibility_class,
 };
 use bevy::{prelude::*, render::sync_world::SyncToRenderWorld};
+use bevy_egui::egui;
 
 pub struct InfiniteGridPlugin;
 
@@ -75,4 +76,46 @@ impl InfiniteGridSettings {
             scale: 15.0,                                   // 较小的缩放，适合2D的密集网格
         }
     }
+
+    /// 获取深色主题的颜色配置
+    pub const fn dark_colors() -> GridColors {
+        GridColors {
+            x_axis_color: Color::oklch(0.65, 0.24, 27.0),  // 红色X轴
+            z_axis_color: Color::oklch(0.65, 0.19, 255.0), // 蓝色Z轴
+            minor_line_color: Color::srgb(0.15, 0.15, 0.15), // 较浅的次要线
+            major_line_color: Color::srgb(0.3, 0.3, 0.3),  // 较浅的主要线
+        }
+    }
+
+    /// 获取浅色主题的颜色配置
+    pub const fn light_colors() -> GridColors {
+        GridColors {
+            x_axis_color: Color::oklch(0.5, 0.18, 27.0),   // 稍暗的红色X轴
+            z_axis_color: Color::oklch(0.5, 0.14, 255.0),  // 稍暗的蓝色Z轴
+            minor_line_color: Color::srgb(0.7, 0.7, 0.7),  // 较深的次要线
+            major_line_color: Color::srgb(0.4, 0.4, 0.4),  // 较深的主要线
+        }
+    }
+
+    /// 根据egui主题更新网格颜色（只修改颜色，不修改其他设置）
+    pub fn update_colors_from_egui_theme(&mut self, theme: egui::Theme) {
+        let colors = match theme {
+            egui::Theme::Light => Self::light_colors(),
+            egui::Theme::Dark => Self::dark_colors(),
+        };
+
+        self.x_axis_color = colors.x_axis_color;
+        self.z_axis_color = colors.z_axis_color;
+        self.minor_line_color = colors.minor_line_color;
+        self.major_line_color = colors.major_line_color;
+    }
+}
+
+/// 网格颜色配置
+#[derive(Copy, Clone)]
+pub struct GridColors {
+    pub x_axis_color: Color,
+    pub z_axis_color: Color,
+    pub minor_line_color: Color,
+    pub major_line_color: Color,
 }

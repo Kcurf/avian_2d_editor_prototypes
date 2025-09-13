@@ -135,6 +135,7 @@ pub fn draw_joints(
     collider_query: Query<&GlobalTransform, With<Collider>>,
     selection: Res<EditorSelection>,
     time: Res<Time>,
+    theme_colors: Res<crate::ui::theme_colors::EditorThemeColors>,
 ) {
     let time_offset = time.elapsed_secs();
 
@@ -147,14 +148,14 @@ pub fn draw_joints(
         if let (Some(pos_a), Some(pos_b)) = (pos_a, pos_b) {
             // Color based on joint type and selection
             let color = match joint.joint_type {
-                JointType::Distance => Color::srgb(0.2, 0.8, 0.8), // Cyan
-                JointType::Revolute => Color::srgb(0.8, 0.2, 0.8), // Magenta
-                JointType::Prismatic => Color::srgb(0.8, 0.8, 0.2), // Yellow
-                JointType::Fixed => Color::srgb(0.5, 0.5, 0.5),    // Gray
+                JointType::Distance => theme_colors.joint_distance,
+                JointType::Revolute => theme_colors.joint_revolute,
+                JointType::Prismatic => theme_colors.joint_prismatic,
+                JointType::Fixed => theme_colors.joint_fixed,
             };
 
             let final_color = if is_selected {
-                Color::srgb(1.0, 1.0, 0.0) // Yellow for selected
+                theme_colors.joint_selected
             } else {
                 color
             };
@@ -230,6 +231,7 @@ pub fn draw_joint_constraints(
     anchor_query: Query<(&AnchorPoint, &GlobalTransform), With<AnchorPoint>>,
     collider_query: Query<&GlobalTransform, With<Collider>>,
     time: Res<Time>,
+    theme_colors: Res<crate::ui::theme_colors::EditorThemeColors>,
 ) {
     let time_offset = time.elapsed_secs();
 
@@ -255,7 +257,7 @@ pub fn draw_joint_constraints(
                         &mut gizmos,
                         pos_a - direction * axis_length,
                         pos_a + direction * axis_length,
-                        Color::srgba(0.8, 0.8, 0.2, 0.3),
+                        theme_colors.joint_prismatic_constraint_alpha,
                         time_offset,
                     );
                 }
@@ -267,7 +269,7 @@ pub fn draw_joint_constraints(
                     gizmos.line_2d(
                         mid_point - offset,
                         mid_point + offset,
-                        Color::srgba(0.5, 0.5, 0.5, 0.5),
+                        theme_colors.joint_fixed_constraint_alpha,
                     );
                 }
             }

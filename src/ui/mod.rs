@@ -10,6 +10,7 @@ mod font_loader;
 mod i18n;
 mod image_preview;
 mod panel_state;
+pub mod theme_colors;
 
 mod collision_layer_ui;
 mod entity_inspector;
@@ -19,6 +20,7 @@ mod top_bar;
 use crate::collider_tools::{PhysicsManager, ToolMode};
 use asset_management::AssetManagementPlugin;
 use panel_state::PanelControlPlugin;
+use theme_colors::ThemeColorsPlugin;
 
 use crate::GizmoCamera;
 use crate::selection::EditorSelection;
@@ -33,6 +35,7 @@ impl Plugin for EditorUIPlugin {
             .add_plugins(PanelControlPlugin)
             .add_plugins(CollisionLayerUIPlugin)
             .add_plugins(AssetManagementPlugin)
+            .add_plugins(ThemeColorsPlugin)
             .add_systems(PostStartup, setup)
             .add_systems(EguiPrimaryContextPass, ui_main)
             .add_systems(PreStartup, i18n::init_translations);

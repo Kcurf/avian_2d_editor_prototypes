@@ -4,6 +4,7 @@ use bevy::prelude::*;
 
 fn main() {
     App::new()
+        .insert_resource(ClearColor(Color::srgb(0.1, 0.1, 0.1))) // Start with dark theme background
         .add_plugins(DefaultPlugins)
         .add_plugins(AvianEditorPlugin)
         .add_systems(Startup, setup)

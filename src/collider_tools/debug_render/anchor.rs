@@ -114,6 +114,7 @@ pub fn draw_anchor_points(
     collider_query: Query<&GlobalTransform, (With<Collider>, Without<AnchorPoint>)>,
     selection: Res<EditorSelection>,
     time: Res<Time>,
+    theme_colors: Res<crate::ui::theme_colors::EditorThemeColors>,
 ) {
     let time_offset = time.elapsed_secs();
     let anchor_count = anchor_query.iter().count();
@@ -138,11 +139,11 @@ pub fn draw_anchor_points(
 
         // Color based on state with higher opacity for better visibility
         let color = if anchor.in_joint {
-            Color::srgba(1.0, 0.3, 0.3, 0.9) // Bright red for anchors in joints
+            theme_colors.anchor_in_joint
         } else if is_selected {
-            Color::srgba(1.0, 1.0, 0.0, 1.0) // Bright yellow for selected anchors
+            theme_colors.anchor_selected
         } else {
-            Color::srgba(0.3, 1.0, 0.3, 0.8) // Bright green for free anchors
+            theme_colors.anchor_free
         };
 
         // Draw anchor point as a dashed circle
@@ -196,6 +197,7 @@ pub fn draw_anchor_gizmos(
     anchor_query: Query<(&AnchorPoint, &Transform)>,
     collider_query: Query<&GlobalTransform, (With<Collider>, Without<AnchorPoint>)>,
     time: Res<Time>,
+    theme_colors: Res<crate::ui::theme_colors::EditorThemeColors>,
 ) {
     let time_offset = time.elapsed_secs();
 
@@ -218,17 +220,17 @@ pub fn draw_anchor_gizmos(
                 &mut gizmos,
                 collider_center,
                 calculated_anchor_pos,
-                Color::srgba(1.0, 1.0, 1.0, 0.3),
+                theme_colors.dashed_line_base_alpha,
                 time_offset,
             );
 
-            // Debug: If positions don't match, draw a red line to show the discrepancy
+            // Debug: If positions don't match, draw a line to show the discrepancy
             if (calculated_anchor_pos - actual_anchor_pos).length() > 0.01 {
                 draw_dashed_line(
                     &mut gizmos,
                     calculated_anchor_pos,
                     actual_anchor_pos,
-                    Color::srgba(1.0, 0.0, 0.0, 0.8),
+                    theme_colors.anchor_in_joint,
                     time_offset,
                 );
             }

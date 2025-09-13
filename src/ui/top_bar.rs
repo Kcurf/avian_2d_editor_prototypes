@@ -8,6 +8,7 @@ use re_ui::{
 
 use crate::ui::panel_state::PanelControlEvent;
 use crate::{EditorSelection, ExportSceneEvent, PhysicsManager, tr, ui::i18n};
+use crate::grid::InfiniteGridSettings;
 
 pub(super) fn ui(ctx: &egui::Context, world: &mut World, physics_paused: bool) {
     // Top bar for physics controls and scene export
@@ -93,6 +94,21 @@ pub(super) fn ui(ctx: &egui::Context, world: &mut World, physics_paused: bool) {
                 if ui.small_icon_button(&theme_icon, "Toggle theme").clicked() {
                     // Apply theme with proper font color management
                     ctx.set_theme(next_theme);
+
+                    // Also update Bevy's clear color to match the theme
+                    world.resource_scope(|_world, mut clear_color: Mut<ClearColor>| {
+                        let new_color = match next_theme {
+                            egui::Theme::Light => Color::srgb(0.9, 0.9, 0.9), // Light gray background
+                            egui::Theme::Dark => Color::srgb(0.1, 0.1, 0.1),   // Dark gray background
+                        };
+                        clear_color.0 = new_color;
+                    });
+
+                    // Update InfiniteGridSettings to match the theme
+                    let mut grid_query = world.query::<&mut InfiniteGridSettings>();
+                    if let Ok(mut grid_settings) = grid_query.single_mut(world) {
+                        grid_settings.update_colors_from_egui_theme(next_theme);
+                    }
                 }
 
                 ui.separator();

@@ -160,8 +160,9 @@ pub fn draw_selected_collider_outlines<Config: GizmoConfigGroup>(
     selection: Res<EditorSelection>,
     collider_query: Query<(&Transform, &Collider), With<ColliderType>>,
     time: Res<Time>,
+    theme_colors: Res<crate::ui::theme_colors::EditorThemeColors>,
 ) {
-    let selection_color = Color::srgb(1.0, 0.8, 0.0); // 橙色选中轮廓
+    let selection_color = theme_colors.selection_outline;
     let time_offset = time.elapsed_secs();
 
     // 遍历所有选中的实体，而不只是主选择
@@ -349,6 +350,7 @@ pub fn update_edit_visualization<Config: GizmoConfigGroup>(
     mut gizmos: Gizmos<Config>,
     edit_state: Res<ColliderEditState>,
     creation_mode: Res<State<ToolMode>>,
+    theme_colors: Res<crate::ui::theme_colors::EditorThemeColors>,
 ) {
     // Only show edit visualization in Edit mode
     if *creation_mode.get() != ToolMode::Edit {
@@ -358,9 +360,9 @@ pub fn update_edit_visualization<Config: GizmoConfigGroup>(
     // Draw control points as gizmo circles
     for control_point in &edit_state.control_points {
         let (color, radius) = match control_point.point_type {
-            ControlPointType::Vertex => (Color::srgb(1.0, 0.0, 0.0), 8.0), // Red, vertex points (increased size)
-            ControlPointType::RadiusControl => (Color::srgb(1.0, 0.5, 0.0), 8.0), // Orange, radius control
-            ControlPointType::LengthControl => (Color::srgb(0.5, 0.0, 1.0), 8.0), // Purple, length control
+            ControlPointType::Vertex => (theme_colors.control_point_vertex, 8.0),
+            ControlPointType::RadiusControl => (theme_colors.control_point_radius, 8.0),
+            ControlPointType::LengthControl => (theme_colors.control_point_length, 8.0),
             _ => (Color::srgb(0.5, 0.5, 0.5), 6.0), // Gray, fallback for other types
         };
 
@@ -371,11 +373,11 @@ pub fn update_edit_visualization<Config: GizmoConfigGroup>(
             color,
         );
 
-        // Add a white outline for better contrast
+        // Add a colored outline for better contrast
         gizmos.circle_2d(
             bevy::math::Isometry2d::from_translation(control_point.position),
             radius + 1.0,
-            Color::WHITE,
+            theme_colors.control_point_outline,
         );
     }
 }
@@ -682,8 +684,9 @@ pub fn draw_preview_anchor<Config: GizmoConfigGroup>(
     gizmos: &mut Gizmos<Config>,
     position: Vec2,
     time_offset: f32,
+    theme_colors: &crate::ui::theme_colors::EditorThemeColors,
 ) {
-    let color = Color::srgba(1.0, 1.0, 0.0, 0.5); // Yellow with transparency
+    let color = theme_colors.preview_anchor;
 
     // Draw preview circle
     draw_dashed_circle(gizmos, position, 8.0, color, time_offset);
@@ -709,8 +712,9 @@ pub fn draw_preview_joint<Config: GizmoConfigGroup>(
     pos_b: Vec2,
     joint_type: crate::debug_render::joint::JointType,
     time_offset: f32,
+    theme_colors: &crate::ui::theme_colors::EditorThemeColors,
 ) {
-    let color = Color::srgba(1.0, 1.0, 0.0, 0.5); // Yellow with transparency
+    let color = theme_colors.preview_joint;
 
     match joint_type {
         crate::debug_render::joint::JointType::Distance => {
