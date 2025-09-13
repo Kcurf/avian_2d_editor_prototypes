@@ -361,6 +361,22 @@ pub(super) fn ui(
                                         joint_config.hinge();
                                         config_changed = true;
                                     }
+                                    if ui.button(tr!("breakable_preset")).clicked() {
+                                        joint_config.breakable_connection();
+                                        config_changed = true;
+                                    }
+                                    if ui.button(tr!("motorized_preset")).clicked() {
+                                        joint_config.motorized_hinge();
+                                        config_changed = true;
+                                    }
+                                    if ui.button(tr!("suspension_preset")).clicked() {
+                                        joint_config.suspension();
+                                        config_changed = true;
+                                    }
+                                    if ui.button(tr!("rope_preset")).clicked() {
+                                        joint_config.rope_constraint();
+                                        config_changed = true;
+                                    }
                                 });
 
                                 ui.separator();
@@ -744,6 +760,145 @@ pub(super) fn ui(
                                     }
                                 }
 
+                                // Advanced Properties
+                                ui.collapsing(tr!("advanced_properties"), |ui| {
+                                    // Breakable Joint Settings
+                                    ui.collapsing(tr!("breakable_joint"), |ui| {
+                                        ui.label(tr!("breakable_settings"));
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("breakable"));
+                                            config_changed = ui
+                                                .checkbox(
+                                                    &mut joint_config.advanced.breakable,
+                                                    tr!("enable"),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("break_force"));
+                                            config_changed = ui
+                                                .add(
+                                                    egui::DragValue::new(
+                                                        &mut joint_config.advanced.break_force,
+                                                    )
+                                                    .speed(10.0)
+                                                    .range(0.0..=10000.0),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("break_torque"));
+                                            config_changed = ui
+                                                .add(
+                                                    egui::DragValue::new(
+                                                        &mut joint_config.advanced.break_torque,
+                                                    )
+                                                    .speed(10.0)
+                                                    .range(0.0..=10000.0),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.label(tr!("breakable_description"));
+                                    });
+
+                                    // Motor Settings
+                                    ui.collapsing(tr!("joint_motor"), |ui| {
+                                        ui.label(tr!("motor_settings"));
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("motor_enabled"));
+                                            config_changed = ui
+                                                .checkbox(
+                                                    &mut joint_config.advanced.motor_enabled,
+                                                    tr!("enable"),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("target_velocity"));
+                                            config_changed = ui
+                                                .add(
+                                                    egui::DragValue::new(
+                                                        &mut joint_config.advanced.motor_target_velocity,
+                                                    )
+                                                    .speed(0.1)
+                                                    .range(-100.0..=100.0),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("max_force"));
+                                            config_changed = ui
+                                                .add(
+                                                    egui::DragValue::new(
+                                                        &mut joint_config.advanced.motor_max_force,
+                                                    )
+                                                    .speed(1.0)
+                                                    .range(0.0..=1000.0),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("motor_stiffness"));
+                                            config_changed = ui
+                                                .add(
+                                                    egui::Slider::new(
+                                                        &mut joint_config.advanced.motor_stiffness,
+                                                        0.0..=100.0,
+                                                    )
+                                                    .text(tr!("stiffness")),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("motor_damping"));
+                                            config_changed = ui
+                                                .add(
+                                                    egui::Slider::new(
+                                                        &mut joint_config.advanced.motor_damping,
+                                                        0.0..=10.0,
+                                                    )
+                                                    .text(tr!("damping")),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.label(tr!("motor_description"));
+                                    });
+
+                                    // Advanced Physics
+                                    ui.collapsing(tr!("advanced_physics"), |ui| {
+                                        ui.label(tr!("joint_disable_settings"));
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("disabled"));
+                                            config_changed = ui
+                                                .checkbox(
+                                                    &mut joint_config.advanced.disabled,
+                                                    tr!("disable_joint"),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.vertical(|ui| {
+                                            ui.label(tr!("track_forces"));
+                                            config_changed = ui
+                                                .checkbox(
+                                                    &mut joint_config.advanced.track_forces,
+                                                    tr!("track_forces"),
+                                                )
+                                                .changed()
+                                                || config_changed;
+                                        });
+                                        ui.label(tr!("advanced_physics_description"));
+                                    });
+                                });
+
                                 ui.separator();
 
                                 // Actions
@@ -771,10 +926,24 @@ pub(super) fn ui(
                                     .markdown("- **Revolute**: Hinge-type rotation")
                                     .markdown("- **Prismatic**: Linear sliding motion")
                                     .markdown("- **Fixed**: Rigid connection")
+                                    .markdown(tr!("presets"))
+                                    .markdown("- **Rigid**: Stiff, low compliance connection")
+                                    .markdown("- **Spring**: Flexible, bouncy connection")
+                                    .markdown("- **Sliding**: Prismatic with linear limits")
+                                    .markdown("- **Hinge**: Revolute with angular limits")
+                                    .markdown("- **Breakable**: Joint that breaks under force")
+                                    .markdown("- **Motorized**: Joint with automatic motor")
+                                    .markdown("- **Suspension**: Spring with damping")
+                                    .markdown("- **Rope**: Distance with soft limits")
                                     .markdown(tr!("properties"))
                                     .markdown("- **Compliance**: Adjust flexibility")
                                     .markdown("- **Distance Limits**: Restrict motion range")
                                     .markdown("- **Collision**: Toggle between bodies")
+                                    .markdown(tr!("advanced_features"))
+                                    .markdown("- **Breakable Joints**: Set force/torque thresholds")
+                                    .markdown("- **Joint Motors**: Automatic velocity control")
+                                    .markdown("- **Force Tracking**: Monitor joint forces")
+                                    .markdown("- **Advanced Physics**: Collision and break settings")
                                     .ui(ui);
 
                                 // Current state
