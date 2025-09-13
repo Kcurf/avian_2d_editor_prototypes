@@ -58,7 +58,7 @@ impl Plugin for ColliderCorePlugin {
             .add_systems(
                 Update,
                 (
-                    draw_selected_collider_outlines,
+                    draw_selected_collider_outlines::<EditorGizmoConfigGroup>,
                     handle_creation_mode_switching.run_if(not(egui_wants_any_keyboard_input)),
                 ),
             );

@@ -1,4 +1,4 @@
-use crate::{DragCancelClick, EditorSelection};
+use crate::{DragCancelClick, EditorGizmoConfigGroup, EditorSelection};
 
 use super::{ColliderCreationState, ColliderType, utils::*, visualization::*};
 
@@ -958,7 +958,7 @@ impl Plugin for EditPlugin {
                 (
                     handle_control_point_interaction,
                     update_control_points,
-                    super::update_edit_visualization,
+                    super::update_edit_visualization::<EditorGizmoConfigGroup>,
                 )
                     .run_if(in_state(super::ToolMode::Edit).and(not(egui_wants_any_input))),
             )

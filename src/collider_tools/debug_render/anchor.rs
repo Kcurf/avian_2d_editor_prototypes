@@ -75,7 +75,6 @@ impl Plugin for AnchorDebugRenderPlugin {
                 draw_anchor_points,
                 draw_anchor_gizmos,
             )
-                .chain()
                 .run_if(
                     in_state(crate::collider_tools::ToolMode::Anchor)
                         .or(in_state(crate::collider_tools::ToolMode::Joint)),

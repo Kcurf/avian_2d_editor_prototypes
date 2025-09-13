@@ -36,6 +36,7 @@ use bevy::prelude::*;
 use bevy_egui::input::egui_wants_any_input;
 
 // Re-use visualization functions from the visualization module
+use super::EditorGizmoConfigGroup;
 use super::visualization::draw_preview_anchor;
 
 /// State for anchor creation and manipulation
@@ -100,7 +101,7 @@ impl Plugin for AnchorCreationPlugin {
                 (
                     update_mouse_position,
                     update_anchor_preview,
-                    update_anchor_preview_visualization,
+                    update_anchor_preview_visualization::<EditorGizmoConfigGroup>,
                     sync_anchor_selection_with_editor_selection,
                     handle_anchor_mode_input,
                     handle_anchor_dragging,
@@ -456,8 +457,8 @@ fn update_anchor_preview(
     }
 }
 
-fn update_anchor_preview_visualization(
-    mut gizmos: Gizmos,
+fn update_anchor_preview_visualization<Config: GizmoConfigGroup>(
+    mut gizmos: Gizmos<Config>,
     anchor_state: Res<AnchorCreationState>,
     time: Res<Time>,
     collider_query: Query<&GlobalTransform, With<Collider>>,

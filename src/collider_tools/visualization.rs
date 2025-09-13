@@ -54,8 +54,8 @@ pub(super) fn generate_capsule_polyline(
 }
 
 /// 使用完整轮廓点绘制胶囊体虚线
-pub(super) fn draw_dashed_capsule(
-    gizmos: &mut Gizmos,
+pub(super) fn draw_dashed_capsule<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
     point_a: Vec2,
     point_b: Vec2,
     radius: f32,
@@ -111,8 +111,8 @@ pub(super) fn draw_dashed_capsule(
 }
 
 /// 在多边形轮廓上绘制一段线
-pub(super) fn draw_polyline_segment(
-    gizmos: &mut Gizmos,
+pub(super) fn draw_polyline_segment<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
     points: &[Vec2],
     segment_lengths: &[f32],
     start_distance: f32,
@@ -155,8 +155,8 @@ pub(super) fn draw_polyline_segment(
 }
 
 /// 绘制选中collider的虚线轮廓系统
-pub fn draw_selected_collider_outlines(
-    mut gizmos: Gizmos,
+pub fn draw_selected_collider_outlines<Config: GizmoConfigGroup>(
+    mut gizmos: Gizmos<Config>,
     selection: Res<EditorSelection>,
     collider_query: Query<(&Transform, &Collider), With<ColliderType>>,
     time: Res<Time>,
@@ -328,7 +328,11 @@ pub fn calculate_collider_vertices(
 /// - `gizmos`: Gizmos resource for drawing
 /// - `preview`: Preview collider data containing vertices
 /// - `color`: Color to use for the visualization
-pub fn draw_collider_shape(gizmos: &mut Gizmos, preview: &PreviewCollider, color: Color) {
+pub fn draw_collider_shape<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
+    preview: &PreviewCollider,
+    color: Color,
+) {
     let vertices = &preview.vertices;
 
     if vertices.len() >= 2 {
@@ -341,8 +345,8 @@ pub fn draw_collider_shape(gizmos: &mut Gizmos, preview: &PreviewCollider, color
 }
 
 /// Update visualization for edit mode
-pub fn update_edit_visualization(
-    mut gizmos: Gizmos,
+pub fn update_edit_visualization<Config: GizmoConfigGroup>(
+    mut gizmos: Gizmos<Config>,
     edit_state: Res<ColliderEditState>,
     creation_mode: Res<State<ToolMode>>,
 ) {
@@ -569,8 +573,8 @@ pub(super) fn generate_control_points(
 }
 
 /// 绘制虚线（带滚动动画效果）
-pub(super) fn draw_dashed_line(
-    gizmos: &mut Gizmos,
+pub(super) fn draw_dashed_line<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
     start: Vec2,
     end: Vec2,
     color: Color,
@@ -609,8 +613,8 @@ pub(super) fn draw_dashed_line(
 }
 
 /// 绘制虚线圆圈（带滚动动画效果）
-pub(super) fn draw_dashed_circle(
-    gizmos: &mut Gizmos,
+pub(super) fn draw_dashed_circle<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
     center: Vec2,
     radius: f32,
     color: Color,
@@ -627,8 +631,8 @@ pub(super) fn draw_dashed_circle(
     );
 }
 
-pub(super) fn draw_dashed_arc(
-    gizmos: &mut Gizmos,
+pub(super) fn draw_dashed_arc<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
     center: Vec2,
     radius: f32,
     start_angle: f32,
@@ -674,7 +678,11 @@ pub(super) fn draw_dashed_arc(
 }
 
 /// 绘制预览锚点
-pub fn draw_preview_anchor(gizmos: &mut Gizmos, position: Vec2, time_offset: f32) {
+pub fn draw_preview_anchor<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
+    position: Vec2,
+    time_offset: f32,
+) {
     let color = Color::srgba(1.0, 1.0, 0.0, 0.5); // Yellow with transparency
 
     // Draw preview circle
@@ -695,8 +703,8 @@ pub fn draw_preview_anchor(gizmos: &mut Gizmos, position: Vec2, time_offset: f32
 }
 
 /// 绘制预览关节
-pub fn draw_preview_joint(
-    gizmos: &mut Gizmos,
+pub fn draw_preview_joint<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
     pos_a: Vec2,
     pos_b: Vec2,
     joint_type: crate::debug_render::joint::JointType,
@@ -736,8 +744,8 @@ pub fn draw_preview_joint(
 }
 
 /// 绘制选中collider的虚线轮廓
-pub(super) fn draw_selection_outline(
-    gizmos: &mut Gizmos,
+pub(super) fn draw_selection_outline<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
     transform: &Transform,
     collider: &Collider,
     color: Color,

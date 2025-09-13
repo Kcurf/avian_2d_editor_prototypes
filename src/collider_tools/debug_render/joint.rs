@@ -11,6 +11,8 @@ use crate::selection::EditorSelection;
 use avian2d::prelude::*;
 use bevy::prelude::*;
 
+use super::EditorGizmoConfigGroup;
+
 /// Component for joint visualization
 #[derive(Component, Debug, Clone)]
 pub struct JointVisualization {
@@ -118,11 +120,8 @@ impl Plugin for JointDebugRenderPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            draw_joints.run_if(in_state(crate::collider_tools::ToolMode::Joint)),
-        )
-        .add_systems(
-            Update,
-            draw_joint_constraints.run_if(in_state(crate::collider_tools::ToolMode::Joint)),
+            (draw_joints, draw_joint_constraints)
+                .run_if(in_state(crate::collider_tools::ToolMode::Joint)),
         )
         .add_observer(cleanup_joint_on_remove);
     }
@@ -130,7 +129,7 @@ impl Plugin for JointDebugRenderPlugin {
 
 /// Draw joint connections and visual elements
 pub fn draw_joints(
-    mut gizmos: Gizmos,
+    mut gizmos: Gizmos<EditorGizmoConfigGroup>,
     joint_query: Query<(Entity, &JointVisualization)>,
     anchor_query: Query<(&AnchorPoint, &GlobalTransform), With<AnchorPoint>>,
     collider_query: Query<&GlobalTransform, With<Collider>>,
@@ -226,7 +225,7 @@ fn get_joint_positions(
 
 /// Draw joint constraints and limits
 pub fn draw_joint_constraints(
-    mut gizmos: Gizmos,
+    mut gizmos: Gizmos<EditorGizmoConfigGroup>,
     joint_query: Query<&JointVisualization>,
     anchor_query: Query<(&AnchorPoint, &GlobalTransform), With<AnchorPoint>>,
     collider_query: Query<&GlobalTransform, With<Collider>>,
@@ -277,8 +276,8 @@ pub fn draw_joint_constraints(
 }
 
 /// Draw joint connection based on type
-fn draw_joint_connection(
-    gizmos: &mut Gizmos,
+fn draw_joint_connection<Config: GizmoConfigGroup>(
+    gizmos: &mut Gizmos<Config>,
     pos_a: Vec2,
     pos_b: Vec2,
     joint_type: JointType,
