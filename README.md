@@ -111,42 +111,6 @@ cargo build
 cargo build -p avian_editor
 ```
 
-### Running Examples
-```bash
-# Basic 2D configuration example
-cargo run -p avian_editor --example minimal_2d_configured
-
-# Simple collider creation example
-cargo run -p avian_editor --example simple_collider_creation
-
-# Transform tools and selection test
-cargo run -p avian_editor --example test_gizmo_selection
-
-# Scene export demonstration
-cargo run -p avian_editor --example scene_export_demo
-
-# Anchor position test
-cargo run -p avian_editor --example test_anchor_position
-
-# Run the editor main program
-cargo run -p avian_editor --bin editor
-```
-
-### Testing
-```bash
-# Run all tests
-cargo test
-
-# Run tests for specific crate
-cargo test -p avian_editor
-
-# Code linting
-cargo clippy
-
-# Code formatting
-cargo fmt
-```
-
 ## Usage Instructions
 
 ### Basic Operations
