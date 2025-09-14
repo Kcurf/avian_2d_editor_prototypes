@@ -836,7 +836,6 @@ checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 [[package]]
 name = "avian2d"
 version = "0.3.0"
-source = "git+https://github.com/Jondolf/avian?rev=3b711520c90541b84bce570241baafb54245e33a#3b711520c90541b84bce570241baafb54245e33a"
 dependencies = [
  "approx",
  "arrayvec",
@@ -866,13 +865,11 @@ dependencies = [
  "bevy",
  "bevy-inspector-egui",
  "bevy_egui",
- "bevy_picking",
- "bevy_state",
  "chrono",
  "crossbeam",
  "disqualified",
  "font-kit",
- "futures-lite",
+ "getrandom 0.3.3",
  "log",
  "once_cell",
  "rand 0.9.2",
@@ -880,17 +877,13 @@ dependencies = [
  "rfd",
  "ron 0.11.0",
  "serde",
- "serde_json",
- "tempfile",
  "thiserror 2.0.16",
- "tokio",
  "uuid",
 ]
 
 [[package]]
 name = "avian_derive"
 version = "0.2.2"
-source = "git+https://github.com/Jondolf/avian?rev=3b711520c90541b84bce570241baafb54245e33a#3b711520c90541b84bce570241baafb54245e33a"
 dependencies = [
  "proc-macro-error2",
  "proc-macro2",
@@ -1383,7 +1376,6 @@ dependencies = [
 [[package]]
 name = "bevy_heavy"
 version = "0.2.0"
-source = "git+https://github.com/Jondolf/bevy_heavy.git#942fe8ea21c90bdc341e90487a98f7bd3c6ad378"
 dependencies = [
  "bevy_math",
  "bevy_reflect",
@@ -3708,9 +3700,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "26145e563e54f2cadc477553f1ec5ee650b00862f0a58bcd12cbdc5f0ea2d2f4"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "r-efi",
  "wasi 0.14.5+wasi-0.2.4",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -3780,7 +3774,7 @@ dependencies = [
 [[package]]
 name = "glam_matrix_extensions"
 version = "0.1.0"
-source = "git+https://github.com/Jondolf/glam_matrix_extensions#3dcfc3b9279fbe792f240a56c96bae8949f4a499"
+source = "git+https://github.com/Jondolf/glam_matrix_extensions?rev=3dcfc3b9#3dcfc3b9279fbe792f240a56c96bae8949f4a499"
 dependencies = [
  "bevy_reflect",
  "glam",
@@ -7742,9 +7736,7 @@ dependencies = [
  "io-uring",
  "libc",
  "mio 1.0.4",
- "parking_lot",
  "pin-project-lite",
- "signal-hook-registry",
  "slab",
  "socket2 0.6.0",
  "tokio-macros",

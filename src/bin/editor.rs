@@ -1,3 +1,4 @@
+use avian_editor::SceneExportEvent;
 use avian_editor::*;
 use avian2d::prelude::*;
 use bevy::prelude::*;
@@ -55,7 +56,7 @@ fn setup(mut commands: Commands) {
 fn handle_mode_switching(
     mut creation_properties: ResMut<CreationProperties>,
     keyboard: Res<ButtonInput<KeyCode>>,
-    mut export_events: EventWriter<ExportSceneEvent>,
+    mut export_events: EventWriter<SceneExportEvent>,
     selection: Res<EditorSelection>,
 ) {
     // Collider type switching with letter keys
@@ -86,19 +87,19 @@ fn handle_mode_switching(
             // Ctrl+Shift+Alt+E: Export selected entities only
             let selected_entities: Vec<Entity> = selection.iter().collect();
             info!("Exporting {} selected entities...", selected_entities.len());
-            export_events.write(ExportSceneEvent::Entities(selected_entities));
+            export_events.write(SceneExportEvent::Entities(selected_entities));
         } else if keyboard.pressed(KeyCode::ShiftLeft) {
-            // Ctrl+Shift+E: Export only colliders
+            // Ctrl+Shift+E: Export only colliders (currently exports all)
             info!("Exporting colliders only...");
-            export_events.write(ExportSceneEvent::CollidersOnly);
+            export_events.write(SceneExportEvent::All);
         } else if keyboard.pressed(KeyCode::AltLeft) {
-            // Ctrl+Alt+E: Export only joints
+            // Ctrl+Alt+E: Export only joints (currently exports all)
             info!("Exporting joints only...");
-            export_events.write(ExportSceneEvent::JointsOnly);
+            export_events.write(SceneExportEvent::All);
         } else {
             // Ctrl+E: Export all physics entities
             info!("Exporting all physics entities...");
-            export_events.write(ExportSceneEvent::All);
+            export_events.write(SceneExportEvent::All);
         }
     }
 }

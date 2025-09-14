@@ -9,7 +9,7 @@ mod asset_management;
 mod font_loader;
 mod i18n;
 mod image_preview;
-mod panel_state;
+pub mod panel_state;
 pub mod theme_colors;
 
 mod collision_layer_ui;
@@ -18,15 +18,15 @@ mod tool_panel;
 mod top_bar;
 
 use crate::collider_tools::{PhysicsManager, ToolMode};
-use tool_panel::DuplicateEntityEvent;
 use asset_management::AssetManagementPlugin;
 use panel_state::PanelControlPlugin;
 use theme_colors::ThemeColorsPlugin;
+use tool_panel::DuplicateEntityEvent;
 
 use crate::GizmoCamera;
+use crate::collider_tools::debug_render::joint::{JointConfig, joint_relationships};
 use crate::selection::EditorSelection;
 use collision_layer_ui::CollisionLayerUIPlugin;
-use crate::collider_tools::debug_render::joint::{JointConfig, joint_relationships};
 
 pub struct EditorUIPlugin;
 
@@ -250,8 +250,14 @@ fn handle_duplicate_entity(
     mut events: EventReader<DuplicateEntityEvent>,
     mut selection: ResMut<EditorSelection>,
     // Query for all anchor entities and find ones that belong to the duplicated entity
-    anchor_query: Query<(Entity, &crate::collider_tools::debug_render::anchor::AnchorPoint)>,
-    joint_query: Query<(Entity, &crate::collider_tools::debug_render::joint::JointConfig)>,
+    anchor_query: Query<(
+        Entity,
+        &crate::collider_tools::debug_render::anchor::AnchorPoint,
+    )>,
+    joint_query: Query<(
+        Entity,
+        &crate::collider_tools::debug_render::joint::JointConfig,
+    )>,
 ) {
     for event in events.read() {
         // First, create a basic duplicate without linked_cloning to avoid crashes
@@ -268,15 +274,22 @@ fn handle_duplicate_entity(
                 anchor_mapping.insert(anchor_entity, cloned_anchor);
 
                 // Update the anchor's parent entity reference
-                commands.entity(cloned_anchor).insert(crate::collider_tools::debug_render::anchor::AnchorPoint {
-                    parent_entity: cloned_entity,
-                    ..anchor_point.clone()
-                });
+                commands.entity(cloned_anchor).insert(
+                    crate::collider_tools::debug_render::anchor::AnchorPoint {
+                        parent_entity: cloned_entity,
+                        ..anchor_point.clone()
+                    },
+                );
 
                 // Update the parent-child relationship
-                commands.entity(cloned_anchor).insert(bevy::prelude::ChildOf(cloned_entity));
+                commands
+                    .entity(cloned_anchor)
+                    .insert(bevy::prelude::ChildOf(cloned_entity));
 
-                info!("Duplicated anchor {:?} to {:?} for entity {:?}", anchor_entity, cloned_anchor, event.original);
+                info!(
+                    "Duplicated anchor {:?} to {:?} for entity {:?}",
+                    anchor_entity, cloned_anchor, event.original
+                );
             }
         }
 
@@ -350,7 +363,9 @@ fn handle_duplicate_entity(
             commands.entity(new_joint_entity).insert(new_joint_config);
 
             // Set up parent-child relationship
-            commands.entity(new_joint_entity).insert(bevy::prelude::ChildOf(cloned_entity));
+            commands
+                .entity(new_joint_entity)
+                .insert(bevy::prelude::ChildOf(cloned_entity));
 
             // Re-establish anchor relationships if we have duplicated anchors
             let mut anchor_entities = Vec::new();
@@ -368,14 +383,24 @@ fn handle_duplicate_entity(
                 );
             }
 
-            info!("Duplicated joint {:?} to new joint {:?} with anchors {:?}", joint_entity, new_joint_entity, anchor_entities);
+            info!(
+                "Duplicated joint {:?} to new joint {:?} with anchors {:?}",
+                joint_entity, new_joint_entity, anchor_entities
+            );
         }
 
-        info!("Duplicated {} anchors for entity {:?}", anchor_mapping.len(), event.original);
+        info!(
+            "Duplicated {} anchors for entity {:?}",
+            anchor_mapping.len(),
+            event.original
+        );
 
         // Update the selection to the newly cloned entity
         selection.set(cloned_entity);
 
-        info!("Duplicated entity {:?} to new entity {:?} (with manual anchor duplication)", event.original, cloned_entity);
+        info!(
+            "Duplicated entity {:?} to new entity {:?} (with manual anchor duplication)",
+            event.original, cloned_entity
+        );
     }
 }

@@ -124,7 +124,11 @@ impl JointConfigurationEnum {
         entity2: Entity,
     ) -> Entity {
         match self {
-            JointConfigurationEnum::Fixed { common, config, advanced } => {
+            JointConfigurationEnum::Fixed {
+                common,
+                config,
+                advanced,
+            } => {
                 let mut joint = FixedJoint::new(entity1, entity2);
 
                 // Apply anchor configuration
@@ -156,7 +160,11 @@ impl JointConfigurationEnum {
                 entity_commands.id()
             }
 
-            JointConfigurationEnum::Distance { common, config, advanced } => {
+            JointConfigurationEnum::Distance {
+                common,
+                config,
+                advanced,
+            } => {
                 let mut joint = DistanceJoint::new(entity1, entity2);
 
                 // Apply anchor configuration
@@ -197,7 +205,11 @@ impl JointConfigurationEnum {
                 entity_commands.id()
             }
 
-            JointConfigurationEnum::Prismatic { common, config, advanced } => {
+            JointConfigurationEnum::Prismatic {
+                common,
+                config,
+                advanced,
+            } => {
                 let mut joint = PrismaticJoint::new(entity1, entity2);
 
                 // Apply anchor configuration
@@ -242,7 +254,11 @@ impl JointConfigurationEnum {
                 entity_commands.id()
             }
 
-            JointConfigurationEnum::Revolute { common, config, advanced } => {
+            JointConfigurationEnum::Revolute {
+                common,
+                config,
+                advanced,
+            } => {
                 let mut joint = RevoluteJoint::new(entity1, entity2);
 
                 // Apply anchor configuration

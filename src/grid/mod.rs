@@ -90,10 +90,10 @@ impl InfiniteGridSettings {
     /// 获取浅色主题的颜色配置
     pub const fn light_colors() -> GridColors {
         GridColors {
-            x_axis_color: Color::oklch(0.5, 0.18, 27.0),   // 稍暗的红色X轴
-            z_axis_color: Color::oklch(0.5, 0.14, 255.0),  // 稍暗的蓝色Z轴
-            minor_line_color: Color::srgb(0.7, 0.7, 0.7),  // 较深的次要线
-            major_line_color: Color::srgb(0.4, 0.4, 0.4),  // 较深的主要线
+            x_axis_color: Color::oklch(0.5, 0.18, 27.0), // 稍暗的红色X轴
+            z_axis_color: Color::oklch(0.5, 0.14, 255.0), // 稍暗的蓝色Z轴
+            minor_line_color: Color::srgb(0.7, 0.7, 0.7), // 较深的次要线
+            major_line_color: Color::srgb(0.4, 0.4, 0.4), // 较深的主要线
         }
     }
 

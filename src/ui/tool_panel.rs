@@ -828,7 +828,9 @@ pub(super) fn ui(
                                             config_changed = ui
                                                 .add(
                                                     egui::DragValue::new(
-                                                        &mut joint_config.advanced.motor_target_velocity,
+                                                        &mut joint_config
+                                                            .advanced
+                                                            .motor_target_velocity,
                                                     )
                                                     .speed(0.1)
                                                     .range(-100.0..=100.0),
@@ -949,7 +951,9 @@ pub(super) fn ui(
                                     .markdown("- **Breakable Joints**: Set force/torque thresholds")
                                     .markdown("- **Joint Motors**: Automatic velocity control")
                                     .markdown("- **Force Tracking**: Monitor joint forces")
-                                    .markdown("- **Advanced Physics**: Collision and break settings")
+                                    .markdown(
+                                        "- **Advanced Physics**: Collision and break settings",
+                                    )
                                     .ui(ui);
 
                                 // Current state

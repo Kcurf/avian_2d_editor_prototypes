@@ -52,7 +52,8 @@ impl Plugin for CameraControllerPlugin {
             .register_type::<CameraController>()
             .add_systems(
                 Update,
-                (camera_movement, camera_zoom, camera_drag_movement).run_if(not(egui_wants_any_input)),
+                (camera_movement, camera_zoom, camera_drag_movement)
+                    .run_if(not(egui_wants_any_input)),
             );
     }
 }

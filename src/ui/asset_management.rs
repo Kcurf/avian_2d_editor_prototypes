@@ -11,8 +11,7 @@ use rfd::AsyncFileDialog;
 use std::{borrow::Cow, time::Duration};
 
 /// 选择的图片资产状态资源
-#[derive(Resource, Default, Reflect)]
-#[reflect(Resource, Default)]
+#[derive(Resource, Default)]
 pub struct SelectedImageAsset {
     /// 当前选择的图片句柄
     pub handle: Option<Handle<Image>>,

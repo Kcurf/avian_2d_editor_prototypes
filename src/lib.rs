@@ -5,7 +5,7 @@ pub mod camera;
 pub mod collider_tools;
 pub mod grid;
 pub mod interaction_standards;
-pub mod scene_export;
+pub mod scene_export_import;
 pub mod selection;
 pub mod transform_gizmos;
 pub mod ui;
@@ -15,7 +15,7 @@ pub use camera::*;
 pub use collider_tools::*;
 pub use grid::*;
 pub use interaction_standards::*;
-pub use scene_export::*;
+pub use scene_export_import::*;
 pub use selection::*;
 pub use transform_gizmos::*;
 pub use ui::*;
@@ -60,7 +60,7 @@ impl Plugin for AvianEditorPlugin {
             SelectionPlugin,
             InteractionStandardsPlugin,
             ColliderToolsPluginGroup,
-            SceneExportPlugin,
+            SceneExportImportPlugin,
             InfiniteGridPlugin,
             CameraControllerPlugin,
             TransformGizmoPlugin,

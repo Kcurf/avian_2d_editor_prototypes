@@ -6,9 +6,9 @@ use re_ui::{
     icons::{PAUSE, PLAY},
 };
 
-use crate::ui::panel_state::PanelControlEvent;
-use crate::{EditorSelection, ExportSceneEvent, PhysicsManager, tr, ui::i18n};
 use crate::grid::InfiniteGridSettings;
+use crate::ui::panel_state::PanelControlEvent;
+use crate::{EditorSelection, PhysicsManager, SceneExportEvent, SceneImportEvent, tr, ui::i18n};
 
 pub(super) fn ui(ctx: &egui::Context, world: &mut World, physics_paused: bool) {
     // Top bar for physics controls and scene export
@@ -22,7 +22,7 @@ pub(super) fn ui(ctx: &egui::Context, world: &mut World, physics_paused: bool) {
                 // Scene export menu
                 ui.menu_button(tr!("export_scene"), |ui| {
                     if ui.button(tr!("export_all")).clicked() {
-                        world.send_event(ExportSceneEvent::All);
+                        world.send_event(SceneExportEvent::All);
                     }
                     ui.separator();
                     if ui.button(tr!("export_selected")).clicked() {
@@ -30,17 +30,15 @@ pub(super) fn ui(ctx: &egui::Context, world: &mut World, physics_paused: bool) {
                             .get_resource::<EditorSelection>()
                             .map(|selection| selection.iter().collect())
                             .unwrap_or_default();
-                        world.send_event(ExportSceneEvent::Entities(selected_entities));
+                        world.send_event(SceneExportEvent::Entities(selected_entities));
                         ui.close_kind(bevy_egui::egui::UiKind::Menu);
                     }
-                    ui.separator();
-                    if ui.button(tr!("export_colliders")).clicked() {
-                        world.send_event(ExportSceneEvent::CollidersOnly);
-                        ui.close_kind(bevy_egui::egui::UiKind::Menu);
-                    }
-                    ui.separator();
-                    if ui.button(tr!("export_joints")).clicked() {
-                        world.send_event(ExportSceneEvent::JointsOnly);
+                });
+
+                // Scene import menu
+                ui.menu_button(tr!("import_scene"), |ui| {
+                    if ui.button(tr!("import_from_file")).clicked() {
+                        world.send_event(SceneImportEvent::FromDialog);
                         ui.close_kind(bevy_egui::egui::UiKind::Menu);
                     }
                 });
@@ -99,7 +97,7 @@ pub(super) fn ui(ctx: &egui::Context, world: &mut World, physics_paused: bool) {
                     world.resource_scope(|_world, mut clear_color: Mut<ClearColor>| {
                         let new_color = match next_theme {
                             egui::Theme::Light => Color::srgb(0.9, 0.9, 0.9), // Light gray background
-                            egui::Theme::Dark => Color::srgb(0.1, 0.1, 0.1),   // Dark gray background
+                            egui::Theme::Dark => Color::srgb(0.1, 0.1, 0.1), // Dark gray background
                         };
                         clear_color.0 = new_color;
                     });
