@@ -8,6 +8,12 @@ use crate::{
     TransformGizmoSettings, joint_config::JointConfiguration, tr,
 };
 
+/// Event for duplicating an entity
+#[derive(Event)]
+pub struct DuplicateEntityEvent {
+    pub original: Entity,
+}
+
 pub(super) fn ui(
     ctx: &mut Context,
     world: &mut World,
@@ -1077,12 +1083,20 @@ pub(super) fn ui(
 
                         // Quick Actions
                         let center_clicked = ui.button(tr!("center_to_origin")).clicked();
+                        let duplicate_clicked = ui.button(tr!("duplicate")).clicked();
 
                         if center_clicked {
                             if let Some(entity) = selected_entity {
                                 if let Some(mut transform) = world.get_mut::<Transform>(entity) {
                                     transform.translation = Vec3::ZERO;
                                 }
+                            }
+                        }
+
+                        if duplicate_clicked {
+                            if let Some(entity) = selected_entity {
+                                // Send a duplication event
+                                world.send_event(DuplicateEntityEvent { original: entity });
                             }
                         }
 

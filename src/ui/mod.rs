@@ -18,6 +18,7 @@ mod tool_panel;
 mod top_bar;
 
 use crate::collider_tools::{PhysicsManager, ToolMode};
+use tool_panel::DuplicateEntityEvent;
 use asset_management::AssetManagementPlugin;
 use panel_state::PanelControlPlugin;
 use theme_colors::ThemeColorsPlugin;
@@ -25,6 +26,7 @@ use theme_colors::ThemeColorsPlugin;
 use crate::GizmoCamera;
 use crate::selection::EditorSelection;
 use collision_layer_ui::CollisionLayerUIPlugin;
+use crate::collider_tools::debug_render::joint::{JointConfig, joint_relationships};
 
 pub struct EditorUIPlugin;
 
@@ -36,9 +38,11 @@ impl Plugin for EditorUIPlugin {
             .add_plugins(CollisionLayerUIPlugin)
             .add_plugins(AssetManagementPlugin)
             .add_plugins(ThemeColorsPlugin)
+            .add_event::<DuplicateEntityEvent>()
             .init_resource::<entity_inspector::TriangleLockState>()
             .add_systems(PostStartup, setup)
             .add_systems(EguiPrimaryContextPass, ui_main)
+            .add_systems(Update, handle_duplicate_entity)
             .add_systems(PreStartup, i18n::init_translations);
     }
 }
@@ -238,4 +242,140 @@ fn asset_management_ui(ctx: &mut bevy_egui::egui::Context, world: &mut World) {
 
 pub fn pretty_type_name_str(val: &str) -> String {
     format!("{:?}", disqualified::ShortName(val))
+}
+
+/// Handle entity duplication events
+fn handle_duplicate_entity(
+    mut commands: Commands,
+    mut events: EventReader<DuplicateEntityEvent>,
+    mut selection: ResMut<EditorSelection>,
+    // Query for all anchor entities and find ones that belong to the duplicated entity
+    anchor_query: Query<(Entity, &crate::collider_tools::debug_render::anchor::AnchorPoint)>,
+    joint_query: Query<(Entity, &crate::collider_tools::debug_render::joint::JointConfig)>,
+) {
+    for event in events.read() {
+        // First, create a basic duplicate without linked_cloning to avoid crashes
+        let cloned_entity = commands.entity(event.original).clone_and_spawn().id();
+
+        // Find all anchor entities that belong to the duplicated entity
+        let mut anchor_mapping = std::collections::HashMap::new();
+
+        // First pass: duplicate all anchor entities that belong to this entity
+        for (anchor_entity, anchor_point) in anchor_query.iter() {
+            if anchor_point.parent_entity == event.original {
+                // Duplicate the anchor entity
+                let cloned_anchor = commands.entity(anchor_entity).clone_and_spawn().id();
+                anchor_mapping.insert(anchor_entity, cloned_anchor);
+
+                // Update the anchor's parent entity reference
+                commands.entity(cloned_anchor).insert(crate::collider_tools::debug_render::anchor::AnchorPoint {
+                    parent_entity: cloned_entity,
+                    ..anchor_point.clone()
+                });
+
+                // Update the parent-child relationship
+                commands.entity(cloned_anchor).insert(bevy::prelude::ChildOf(cloned_entity));
+
+                info!("Duplicated anchor {:?} to {:?} for entity {:?}", anchor_entity, cloned_anchor, event.original);
+            }
+        }
+
+        // Second pass: duplicate joints that involve this entity
+        for (joint_entity, joint_config) in joint_query.iter().filter_map(|(entity, config)| {
+            // Check if this joint involves the duplicated entity
+            if config.parent_entity == event.original || config.child_entity == event.original {
+                Some((entity, config))
+            } else {
+                None
+            }
+        }) {
+            // Check if this joint uses anchors that we've duplicated
+            let mut anchor_a_mapped = None;
+            let mut anchor_b_mapped = None;
+
+            if joint_config.anchor_a_is_anchor {
+                if let Some(mapped_a) = anchor_mapping.get(&joint_config.anchor_a) {
+                    anchor_a_mapped = Some(*mapped_a);
+                }
+            }
+            if joint_config.anchor_b_is_anchor {
+                if let Some(mapped_b) = anchor_mapping.get(&joint_config.anchor_b) {
+                    anchor_b_mapped = Some(*mapped_b);
+                }
+            }
+
+            // Determine the parent and child entities for the duplicated joint
+            let (parent_entity, child_entity) = if joint_config.parent_entity == event.original {
+                (cloned_entity, joint_config.child_entity)
+            } else if joint_config.child_entity == event.original {
+                (joint_config.parent_entity, cloned_entity)
+            } else {
+                // If neither parent nor child is the entity being duplicated,
+                // we need to check if they were also duplicated (this would be handled recursively)
+                // For now, just use the original entities
+                (joint_config.parent_entity, joint_config.child_entity)
+            };
+
+            // Create the new joint entity
+            let new_joint_entity = joint_config.joint_config_details.create_physics_joint(
+                &mut commands,
+                // Get anchor offsets - if anchor was duplicated, use the duplicated anchor's local position
+                if anchor_a_mapped.is_some() || !joint_config.anchor_a_is_anchor {
+                    Vec2::ZERO // For origin points or when we'll update later
+                } else {
+                    // For anchors that weren't duplicated, we'll need to update later
+                    Vec2::ZERO
+                },
+                if anchor_b_mapped.is_some() || !joint_config.anchor_b_is_anchor {
+                    Vec2::ZERO
+                } else {
+                    Vec2::ZERO
+                },
+                parent_entity,
+                child_entity,
+            );
+
+            // Create a new JointConfig with updated entity references
+            let new_joint_config = JointConfig {
+                anchor_a: anchor_a_mapped.unwrap_or(joint_config.anchor_a),
+                anchor_b: anchor_b_mapped.unwrap_or(joint_config.anchor_b),
+                anchor_a_is_anchor: joint_config.anchor_a_is_anchor,
+                anchor_b_is_anchor: joint_config.anchor_b_is_anchor,
+                parent_entity,
+                child_entity,
+                joint_config_details: joint_config.joint_config_details.clone(),
+            };
+
+            // Add the JointConfig component to the new joint
+            commands.entity(new_joint_entity).insert(new_joint_config);
+
+            // Set up parent-child relationship
+            commands.entity(new_joint_entity).insert(bevy::prelude::ChildOf(cloned_entity));
+
+            // Re-establish anchor relationships if we have duplicated anchors
+            let mut anchor_entities = Vec::new();
+            if let Some(mapped_a) = anchor_a_mapped {
+                anchor_entities.push(mapped_a);
+            }
+            if let Some(mapped_b) = anchor_b_mapped {
+                anchor_entities.push(mapped_b);
+            }
+            if !anchor_entities.is_empty() {
+                joint_relationships::create_anchor_usage_relationships(
+                    &mut commands,
+                    new_joint_entity,
+                    &anchor_entities,
+                );
+            }
+
+            info!("Duplicated joint {:?} to new joint {:?} with anchors {:?}", joint_entity, new_joint_entity, anchor_entities);
+        }
+
+        info!("Duplicated {} anchors for entity {:?}", anchor_mapping.len(), event.original);
+
+        // Update the selection to the newly cloned entity
+        selection.set(cloned_entity);
+
+        info!("Duplicated entity {:?} to new entity {:?} (with manual anchor duplication)", event.original, cloned_entity);
+    }
 }
