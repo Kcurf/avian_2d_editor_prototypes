@@ -289,8 +289,8 @@ pub fn handle_collider_creation_input(
     windows: Query<&Window>,
     camera_query: Query<(&Camera, &GlobalTransform), With<SpritePickingCamera>>,
 ) {
-    // Handle keyboard input for canceling creation
-    if keyboard.just_pressed(KeyCode::Escape) {
+    // Handle input for canceling creation
+    if keyboard.just_pressed(KeyCode::Escape) || mouse_button.just_pressed(MouseButton::Right) {
         state.preview_collider = None;
         // Reset triangle creation state if active
         if state.triangle_creation_step.is_some() {
@@ -298,17 +298,6 @@ pub fn handle_collider_creation_input(
             state.triangle_base_edge = None;
         }
     }
-    
-    // Handle right mouse button for canceling creation
-    if mouse_button.just_pressed(MouseButton::Right) {
-        state.preview_collider = None;
-        // Reset triangle creation state if active
-        if state.triangle_creation_step.is_some() {
-            state.triangle_creation_step = None;
-            state.triangle_base_edge = None;
-        }
-    }
-    
     let Ok(window) = windows.single() else { return };
     let Ok((camera, camera_transform)) = camera_query.single() else {
         return;
@@ -341,7 +330,7 @@ pub fn handle_collider_creation_input(
                             } else {
                                 None
                             };
-                            
+
                             if let Some(start_pos) = start_pos {
                                 let edge_length = start_pos.distance(world_pos);
                                 // If edge is too short, treat this click as confirming the first point
@@ -350,7 +339,7 @@ pub fn handle_collider_creation_input(
                                     state.triangle_creation_step =
                                         Some(TriangleCreationStep::PositioningThirdVertex);
                                     state.triangle_base_edge = Some((start_pos, start_pos));
-                                    
+
                                     // Update preview to show a point and the potential third vertex
                                     if let Some(ref mut preview) = state.preview_collider {
                                         preview.vertices = vec![start_pos, start_pos, world_pos];
@@ -360,7 +349,7 @@ pub fn handle_collider_creation_input(
                                     state.triangle_creation_step =
                                         Some(TriangleCreationStep::PositioningThirdVertex);
                                     state.triangle_base_edge = Some((start_pos, world_pos));
-                                    
+
                                     // Update preview vertices
                                     if let Some(ref mut preview) = state.preview_collider {
                                         preview.vertices = vec![start_pos, world_pos, world_pos];
@@ -370,21 +359,22 @@ pub fn handle_collider_creation_input(
                         }
                         Some(TriangleCreationStep::PositioningThirdVertex) => {
                             // Check if we're clicking on the same point as the base (in point mode)
-                            let should_create = if let Some((base_start, base_end)) = state.triangle_base_edge {
-                                // If base_start and base_end are the same point (point mode)
-                                if base_start.distance(base_end) < 1.0 {
-                                    // Only create if the third point is different and forms a valid triangle
-                                    let third_point = world_pos;
-                                    base_start.distance(third_point) > 5.0
+                            let should_create =
+                                if let Some((base_start, base_end)) = state.triangle_base_edge {
+                                    // If base_start and base_end are the same point (point mode)
+                                    if base_start.distance(base_end) < 1.0 {
+                                        // Only create if the third point is different and forms a valid triangle
+                                        let third_point = world_pos;
+                                        base_start.distance(third_point) > 5.0
+                                    } else {
+                                        // Normal mode, always create
+                                        true
+                                    }
                                 } else {
-                                    // Normal mode, always create
+                                    // Fallback, always create
                                     true
-                                }
-                            } else {
-                                // Fallback, always create
-                                true
-                            };
-                            
+                                };
+
                             if should_create {
                                 // Complete triangle creation
                                 if let Some(preview) = state.preview_collider.take() {
@@ -423,29 +413,7 @@ pub fn handle_collider_creation_input(
             match properties.collider_type {
                 ColliderType::Triangle => {
                     // Triangle uses multi-step creation, handle in mouse press
-                    match state.triangle_creation_step {
-                        Some(TriangleCreationStep::DefiningBaseEdge) => {
-                            // Move to second step: positioning third vertex
-                            state.triangle_creation_step =
-                                Some(TriangleCreationStep::PositioningThirdVertex);
-
-                            // Get start_pos before borrowing preview_collider mutably
-                            let start_pos = if let Some(ref preview) = state.preview_collider {
-                                preview.start_pos
-                            } else {
-                                world_pos
-                            };
-
-                            // Set triangle_base_edge first
-                            state.triangle_base_edge = Some((start_pos, world_pos));
-
-                            // Then update preview vertices
-                            if let Some(ref mut preview) = state.preview_collider {
-                                preview.vertices = vec![start_pos, world_pos, world_pos];
-                            }
-                        }
-                        _ => {}
-                    }
+                    // This section is now handled in the mouse press handler above
                 }
                 _ => {
                     // Complete creation for other shapes
@@ -602,11 +570,11 @@ pub fn create_collider_from_preview(
                 let area = (vertices[1] - vertices[0])
                     .perp_dot(vertices[2] - vertices[0])
                     .abs();
-                
+
                 // Additional check for point-mode triangles
                 let is_point_mode = vertices[0].distance(vertices[1]) < 1.0;
                 let has_valid_third_point = vertices[0].distance(vertices[2]) > 5.0;
-                
+
                 if area > 1.0 || (is_point_mode && has_valid_third_point) {
                     let triangle_center = (vertices[0] + vertices[1] + vertices[2]) / 3.0;
                     let centered_vertices = vertices
