@@ -36,6 +36,7 @@ impl Plugin for EditorUIPlugin {
             .add_plugins(CollisionLayerUIPlugin)
             .add_plugins(AssetManagementPlugin)
             .add_plugins(ThemeColorsPlugin)
+            .init_resource::<entity_inspector::TriangleLockState>()
             .add_systems(PostStartup, setup)
             .add_systems(EguiPrimaryContextPass, ui_main)
             .add_systems(PreStartup, i18n::init_translations);

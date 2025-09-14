@@ -14,6 +14,7 @@ pub enum EntityInspectorMode {
     #[default]
     ComponentManagement,
     ComponentInspector,
+    ShapeEdit,
 }
 
 /// 实体检查器状态资源

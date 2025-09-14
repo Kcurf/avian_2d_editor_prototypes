@@ -385,7 +385,7 @@ pub fn update_edit_visualization<Config: GizmoConfigGroup>(
 // ===== HELPER FUNCTIONS =====
 
 /// Generate control points for a collider
-pub(super) fn generate_control_points(
+pub fn generate_control_points(
     edit_state: &mut ColliderEditState,
     transform: &Transform,
     collider: &Collider,
