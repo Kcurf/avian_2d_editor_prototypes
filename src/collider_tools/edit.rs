@@ -14,7 +14,8 @@ use super::utils::{
 };
 
 /// Edit state for collider modification
-#[derive(Clone, Resource)]
+#[derive(Clone, Resource, Reflect)]
+#[reflect(Resource)]
 pub struct ColliderEditState {
     /// Control points for the selected collider
     pub control_points: Vec<ControlPoint>,
@@ -47,7 +48,7 @@ impl Default for ColliderEditState {
 }
 
 /// Control point for collider editing
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Reflect)]
 pub struct ControlPoint {
     /// World position of the control point
     pub position: Vec2,
@@ -57,8 +58,8 @@ pub struct ControlPoint {
     pub vertex_index: Option<usize>,
 }
 
-/// Types of control points for different editing operations
-#[derive(Clone, Copy, Debug, PartialEq)]
+/// Type of control point for editing colliders
+#[derive(Clone, PartialEq, Copy, Debug, Reflect)]
 pub enum ControlPointType {
     /// Corner vertex that can be moved to reshape the collider
     Vertex,
@@ -71,7 +72,8 @@ pub enum ControlPointType {
 }
 
 /// Component for control point entities in edit mode
-#[derive(Component)]
+#[derive(Component, Reflect)]
+#[reflect(Component)]
 pub struct ControlPointMarker {
     /// Index of this control point
     pub index: usize,
@@ -81,17 +83,18 @@ pub struct ControlPointMarker {
 
 /// Marker component to identify control point entities and prevent selection conflicts
 /// IMPORTANT: Any entity with this component should NOT be processed by selection systems
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Reflect)]
+#[reflect(Component)]
 pub struct ControlPointEntity;
 
 /// Edit history for undo/redo functionality
-#[derive(Clone)]
+#[derive(Clone, Debug, Reflect)]
 pub struct EditHistory {
     /// Stack of previous states
     pub undo_stack: Vec<ColliderData>,
     /// Stack of undone states (for redo)
     pub redo_stack: Vec<ColliderData>,
-    /// Maximum number of undo steps to keep
+    /// Maximum history size
     pub max_history: usize,
 }
 

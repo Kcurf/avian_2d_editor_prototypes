@@ -9,7 +9,7 @@ use crate::{
 };
 
 /// Event for duplicating an entity
-#[derive(Event)]
+#[derive(Event, Reflect)]
 pub struct DuplicateEntityEvent {
     pub original: Entity,
 }

@@ -109,8 +109,9 @@ pub enum ToolMode {
 /// Supported collider types for creation
 ///
 /// Each type has different creation behavior and physics properties.
-#[derive(Default, Clone, Copy, PartialEq, Debug, Component)]
+#[derive(Default, Clone, Copy, PartialEq, Debug, Component, Reflect)]
 #[require(Selectable, GizmoTransformable)]
+#[reflect(Component)]
 pub enum ColliderType {
     #[default]
     /// Rectangle collider - defined by width and height
@@ -126,11 +127,12 @@ pub enum ColliderType {
 }
 
 /// Stored collider data for undo operations
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Reflect)]
 pub struct ColliderData {
     /// Transform of the collider entity
     pub transform: Transform,
     /// Collider component data
+    #[reflect(ignore)]
     pub collider: Collider,
     /// Collider type for reconstruction
     pub collider_type: ColliderType,
@@ -139,7 +141,7 @@ pub struct ColliderData {
 /// Preview collider data for real-time visualization during creation
 ///
 /// Stores temporary data while user is dragging to create a collider.
-#[derive(Clone)]
+#[derive(Clone, Reflect)]
 pub struct PreviewCollider {
     /// Starting position of the mouse drag (world coordinates)
     pub start_pos: Vec2,

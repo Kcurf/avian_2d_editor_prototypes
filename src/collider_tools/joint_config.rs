@@ -10,7 +10,8 @@ use bevy::prelude::*;
 use crate::JointType;
 
 /// Advanced joint components for breakable joints and force tracking
-#[derive(Component, Clone, Debug, Default)]
+#[derive(Component, Clone, Debug, Default, Reflect)]
+#[reflect(Component)]
 pub struct BreakableJoint {
     /// Force threshold at which joint breaks (Newtons)
     pub break_force: f32,
@@ -19,7 +20,8 @@ pub struct BreakableJoint {
 }
 
 /// Motor component for powered joints
-#[derive(Component, Clone, Debug, Default)]
+#[derive(Component, Clone, Debug, Default, Reflect)]
+#[reflect(Component)]
 pub struct JointMotor {
     /// Target velocity for the motor
     pub target_velocity: f32,
@@ -33,7 +35,8 @@ pub struct JointMotor {
 
 /// Comprehensive joint configuration structure supporting all customizable properties
 /// for Avian 2D joints with advanced features and full API coverage
-#[derive(Resource, Clone, Debug)]
+#[derive(Resource, Clone, Debug, Reflect)]
+#[reflect(Resource)]
 pub struct JointConfiguration {
     /// Current selected joint type
     pub joint_type: JointType,
@@ -52,7 +55,7 @@ pub struct JointConfiguration {
 }
 
 /// Enum containing all joint type configurations with full property support
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Reflect)]
 pub enum JointConfigurationEnum {
     /// FixedJoint configuration with full XPBD constraint support
     Fixed {
@@ -364,7 +367,7 @@ impl Default for JointConfiguration {
 }
 
 /// Common configuration shared by all joint types
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Reflect)]
 pub struct CommonJointConfig {
     /// Linear velocity damping coefficient
     pub damping_linear: f32,
@@ -375,7 +378,7 @@ pub struct CommonJointConfig {
 }
 
 /// Advanced joint configuration for modern Avian features
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Reflect)]
 pub struct AdvancedJointConfig {
     /// Whether the joint is temporarily disabled
     pub disabled: bool,
@@ -400,7 +403,7 @@ pub struct AdvancedJointConfig {
 }
 
 /// FixedJoint configuration - locks relative position and rotation
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Reflect)]
 pub struct FixedJointConfig {
     /// Position constraint compliance (inverse stiffness, m/N)
     pub point_compliance: f32,
@@ -409,7 +412,7 @@ pub struct FixedJointConfig {
 }
 
 /// DistanceJoint configuration - maintains distance between anchor points
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Reflect)]
 pub struct DistanceJointConfig {
     /// Distance constraint compliance (inverse stiffness, m/N)
     pub compliance: f32,
@@ -422,7 +425,7 @@ pub struct DistanceJointConfig {
 }
 
 /// PrismaticJoint configuration - allows sliding along a specific axis
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Reflect)]
 pub struct PrismaticJointConfig {
     /// Free movement axis (default: Vec2::X)
     pub free_axis: Vec2,
@@ -439,7 +442,7 @@ pub struct PrismaticJointConfig {
 }
 
 /// RevoluteJoint configuration - allows rotation around anchor point
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Reflect)]
 pub struct RevoluteJointConfig {
     /// Position constraint compliance (m/N)
     pub point_compliance: f32,

@@ -14,7 +14,8 @@ use bevy::prelude::*;
 use super::EditorGizmoConfigGroup;
 
 /// Component for joint visualization
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Debug, Clone, Reflect)]
+#[reflect(Component)]
 pub struct JointVisualization {
     /// First anchor point entity
     pub anchor_a: Entity,
@@ -26,15 +27,16 @@ pub struct JointVisualization {
     pub selected: bool,
 }
 
-/// Relationship component linking a visualization entity to its joint entity.
-/// This is the source of truth for the visualization-joint relationship.
-#[derive(Component, Debug, Clone)]
+/// Component that links a joint visualization to its actual joint entity
+#[derive(Component, Debug, Clone, Reflect)]
+#[reflect(Component)]
 #[relationship(relationship_target = VisualizedBy)]
 pub struct JointVisualizationOf(pub Entity);
 
 /// Relationship target component tracking which visualization entity belongs to a joint.
 /// This component is updated reactively and should not be modified directly.
-#[derive(Component, Debug, Default)]
+#[derive(Component, Debug, Default, Reflect)]
+#[reflect(Component, Default)]
 #[relationship_target(relationship = JointVisualizationOf)]
 pub struct VisualizedBy(Vec<Entity>);
 
@@ -46,13 +48,15 @@ impl VisualizedBy {
 }
 
 /// Relationship component linking an anchor entity to a joint entity that uses it.
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Debug, Clone, Reflect)]
+#[reflect(Component)]
 #[relationship(relationship_target = UsesAnchors)]
 pub struct AnchorUsedBy(pub Entity);
 
 /// Relationship target component tracking which anchors a joint uses.
 /// This component is updated reactively and should not be modified directly.
-#[derive(Component, Debug, Default)]
+#[derive(Component, Debug, Default, Reflect)]
+#[reflect(Component, Default)]
 #[relationship_target(relationship = AnchorUsedBy)]
 pub struct UsesAnchors(Vec<Entity>);
 
@@ -69,7 +73,8 @@ impl UsesAnchors {
 }
 
 /// Component storing joint configuration data
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Debug, Clone, Reflect)]
+#[reflect(Component)]
 pub struct JointConfig {
     /// First anchor entity
     pub anchor_a: Entity,
@@ -88,7 +93,7 @@ pub struct JointConfig {
 }
 
 /// Types of joints for visualization
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
 pub enum JointType {
     /// Distance joint - maintains fixed distance
     #[default]

@@ -38,7 +38,8 @@ use bevy::prelude::*;
 /// - Center of mass is read-only and computed by Avian
 /// - This separation ensures physically accurate constraints
 /// - Joint forces are properly applied relative to the center of mass
-#[derive(Component, Debug, Clone)]
+#[derive(Component, Debug, Clone, Reflect)]
+#[reflect(Component)]
 pub struct AnchorPoint {
     /// Local anchor position relative to the collider's origin
     /// This is what users set to specify where joints should attach

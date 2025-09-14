@@ -210,7 +210,8 @@ impl FromEntitySetIterator<Entity> for EditorSelection {
 }
 
 /// Marker component for selectable entities.
-#[derive(Component, Default, Clone)]
+#[derive(Component, Default, Clone, Reflect)]
+#[reflect(Component, Default)]
 pub struct Selectable;
 
 /// This system removes entities from the [`EditorSelection`] when they are despawned.

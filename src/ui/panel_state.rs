@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 
 /// 面板状态资源
-#[derive(Resource, Default, Clone)]
+#[derive(Resource, Default, Clone, Reflect)]
+#[reflect(Resource, Default)]
 pub struct PanelState {
     pub left_panel_visible: bool,
     pub right_panel_visible: bool,
@@ -9,7 +10,7 @@ pub struct PanelState {
 }
 
 /// 实体检查器页面模式
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
 pub enum EntityInspectorMode {
     #[default]
     ComponentManagement,
@@ -18,13 +19,14 @@ pub enum EntityInspectorMode {
 }
 
 /// 实体检查器状态资源
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Reflect)]
+#[reflect(Resource, Default)]
 pub struct EntityInspectorState {
     pub current_mode: EntityInspectorMode,
 }
 
 /// 面板控制事件
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Reflect)]
 pub enum PanelControlEvent {
     ToggleLeftPanel,
     ToggleRightPanel,

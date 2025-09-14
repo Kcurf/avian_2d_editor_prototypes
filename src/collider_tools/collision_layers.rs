@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// 运行时碰撞层定义
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Reflect)]
 pub struct RuntimeCollisionLayer {
     pub name: String,        // 层名称
     pub bit: u8,             // 位位置 (0-31)
@@ -27,7 +27,7 @@ impl RuntimeCollisionLayer {
 }
 
 /// 基本碰撞层预设
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Reflect)]
 pub struct CollisionLayerPreset {
     pub name: String,
     pub layers: CollisionLayers,
@@ -35,7 +35,7 @@ pub struct CollisionLayerPreset {
 }
 
 /// 碰撞层包装器，用于序列化
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Reflect)]
 pub struct CollisionLayersWrapper {
     pub memberships: u32,
     pub filters: u32,
@@ -60,7 +60,7 @@ impl From<CollisionLayersWrapper> for CollisionLayers {
 }
 
 /// 自定义碰撞层预设
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Reflect)]
 pub struct CustomCollisionLayerPreset {
     pub name: String,
     #[serde(
@@ -89,7 +89,8 @@ where
 }
 
 /// 碰撞层管理资源
-#[derive(Resource, Debug, Clone)]
+#[derive(Resource, Debug, Clone, Reflect)]
+#[reflect(Resource)]
 pub struct CollisionLayerPresets {
     pub layers: Vec<RuntimeCollisionLayer>,       // 用户定义的层
     pub basic_presets: Vec<CollisionLayerPreset>, // 基本预设
@@ -313,25 +314,25 @@ impl CollisionLayerPresets {
 }
 
 /// 碰撞层管理事件
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Reflect)]
 pub struct AddCustomLayerEvent {
     pub name: String,
     pub description: String,
 }
 
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Reflect)]
 pub struct RemoveCustomLayerEvent {
     pub name: String,
 }
 
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Reflect)]
 pub struct SaveCustomPresetEvent {
     pub name: String,
     pub description: String,
     pub layers: CollisionLayers,
 }
 
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Reflect)]
 pub struct RemoveCustomPresetEvent {
     pub name: String,
 }

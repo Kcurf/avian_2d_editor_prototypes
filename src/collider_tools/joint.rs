@@ -244,7 +244,8 @@ pub fn regenerate_joints_for_anchor_with_viz(
 // use super::visualization::draw_preview_joint; // Currently unused
 
 /// State for joint creation and manipulation
-#[derive(Resource, Default, Debug, Clone)]
+#[derive(Resource, Default, Debug, Clone, Reflect)]
+#[reflect(Resource, Default)]
 pub struct JointCreationState {
     /// Whether we're currently dragging to create a joint
     pub is_dragging: bool,
@@ -259,7 +260,7 @@ pub struct JointCreationState {
 }
 
 /// Type of point being dragged from/to
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
 pub enum DragPointType {
     #[default]
     /// Anchor point - user-defined attachment point on a collider

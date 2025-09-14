@@ -11,7 +11,7 @@ use bevy_egui::input::egui_wants_any_input;
 // === 配置子结构体 ===
 
 /// 质量属性配置
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Reflect)]
 pub struct MassPropertiesConfig {
     /// 显式质量（None = 自动计算）
     pub mass: Option<f32>,
@@ -28,7 +28,7 @@ pub struct MassPropertiesConfig {
 }
 
 /// 材料属性配置
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Reflect)]
 pub struct MaterialPropertiesConfig {
     /// 摩擦系数（None = 使用全局默认 0.5）
     pub friction: Option<f32>,
@@ -43,7 +43,7 @@ pub struct MaterialPropertiesConfig {
 }
 
 /// 运动属性配置
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Reflect)]
 pub struct MotionPropertiesConfig {
     /// 线性阻尼（None = 使用全局默认 0.0）
     pub linear_damping: Option<f32>,
@@ -62,7 +62,7 @@ pub struct MotionPropertiesConfig {
 }
 
 /// 碰撞属性配置
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Reflect)]
 pub struct CollisionPropertiesConfig {
     /// 是否为传感器
     pub is_sensor: bool,
@@ -81,7 +81,7 @@ pub struct CollisionPropertiesConfig {
 }
 
 /// 性能优化配置
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Reflect)]
 pub struct PerformancePropertiesConfig {
     /// 禁用睡眠
     pub disable_sleeping: bool,
@@ -92,7 +92,7 @@ pub struct PerformancePropertiesConfig {
 }
 
 /// 高级物理配置
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Reflect)]
 pub struct AdvancedPhysicsConfig {
     /// 常力（世界空间）
     pub constant_force: Option<Vec2>,
@@ -113,7 +113,8 @@ pub struct AdvancedPhysicsConfig {
 /// Defines the properties used when creating new colliders.
 /// Features a hierarchical configuration system with sensible defaults
 /// and extensive customization options.
-#[derive(Resource, Debug, Clone)]
+#[derive(Resource, Debug, Clone, Reflect)]
+#[reflect(Resource)]
 pub struct CreationProperties {
     // === 基础配置（极简默认） ===
     pub collider_type: ColliderType,
@@ -268,7 +269,8 @@ pub enum TriangleCreationStep {
     PositioningThirdVertex,
 }
 
-#[derive(Resource, Default, Clone)]
+#[derive(Resource, Default, Clone, Reflect)]
+#[reflect(Resource, Default)]
 pub struct ColliderCreationState {
     /// Active preview collider during mouse drag operations
     pub preview_collider: Option<PreviewCollider>,

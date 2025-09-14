@@ -40,7 +40,8 @@ use super::EditorGizmoConfigGroup;
 use super::visualization::draw_preview_anchor;
 
 /// State for anchor creation and manipulation
-#[derive(Resource, Default, Debug)]
+#[derive(Resource, Default, Debug, Reflect)]
+#[reflect(Resource, Default)]
 pub struct AnchorCreationState {
     /// Whether Ctrl key is pressed for precise placement
     pub ctrl_pressed: bool,
@@ -61,7 +62,8 @@ pub struct AnchorCreationState {
 }
 
 /// Component for connection detection animation
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Reflect)]
+#[reflect(Component)]
 pub struct ConnectionAnimation {
     pub start_time: f32,
     pub duration: f32,

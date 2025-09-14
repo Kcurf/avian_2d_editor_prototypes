@@ -11,7 +11,8 @@ use rfd::AsyncFileDialog;
 use std::{borrow::Cow, time::Duration};
 
 /// 选择的图片资产状态资源
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Reflect)]
+#[reflect(Resource, Default)]
 pub struct SelectedImageAsset {
     /// 当前选择的图片句柄
     pub handle: Option<Handle<Image>>,
@@ -47,6 +48,7 @@ pub struct ImageAssetChannel {
 }
 
 /// 图片资产包装器
+#[derive(Clone, Debug)]
 pub struct ImageAssetWrapper {
     /// 文件名
     file_name: String,
@@ -65,6 +67,17 @@ pub struct ImageAssetInfo {
     pub size: Vec2,
     /// 加载时间
     pub loaded_at: std::time::SystemTime,
+}
+
+impl Default for ImageAssetInfo {
+    fn default() -> Self {
+        Self {
+            file_name: String::new(),
+            handle: Handle::default(),
+            size: Vec2::ZERO,
+            loaded_at: std::time::SystemTime::UNIX_EPOCH,
+        }
+    }
 }
 
 impl Default for ImageAssetChannel {

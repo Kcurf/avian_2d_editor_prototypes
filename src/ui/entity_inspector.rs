@@ -13,7 +13,8 @@ use crate::ui::panel_state::{EntityInspectorMode, EntityInspectorState};
 use crate::{EditorSelection, tr};
 
 /// Triangle lock state for angles and sides
-#[derive(Resource, Default, Debug)]
+#[derive(Resource, Default, Debug, Reflect)]
+#[reflect(Resource, Default)]
 pub struct TriangleLockState {
     /// Locked angle index (0=A, 1=B, 2=C), None if no angle locked
     pub locked_angle: Option<usize>,

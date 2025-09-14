@@ -302,7 +302,8 @@ impl UnifiedCollisionLayerUI {
 }
 
 /// 添加层状态资源
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Reflect)]
+#[reflect(Resource, Default)]
 pub struct AddLayerState {
     pub show_input: bool,
     pub name: String,
@@ -310,7 +311,8 @@ pub struct AddLayerState {
 }
 
 /// 保存预设状态资源
-#[derive(Resource, Default)]
+#[derive(Resource, Default, Reflect)]
+#[reflect(Resource, Default)]
 pub struct SavePresetState {
     pub show_input: bool,
     pub name: String,

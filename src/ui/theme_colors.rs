@@ -6,7 +6,8 @@ use bevy::prelude::*;
 use bevy_egui::egui;
 
 /// 编辑器可视化主题颜色
-#[derive(Resource, Clone, Debug)]
+#[derive(Resource, Clone, Debug, Reflect)]
+#[reflect(Resource)]
 pub struct EditorThemeColors {
     /// 选中轮廓颜色
     pub selection_outline: Color,

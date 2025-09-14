@@ -4,7 +4,8 @@ use bevy::window::PrimaryWindow;
 use bevy_egui::input::egui_wants_any_input;
 
 /// Camera controller resource for managing camera movement and zoom
-#[derive(Resource)]
+#[derive(Resource, Reflect)]
+#[reflect(Resource, Default)]
 pub struct CameraController {
     /// Movement speed in world units per second
     pub move_speed: f32,
@@ -47,10 +48,12 @@ pub struct CameraControllerPlugin;
 
 impl Plugin for CameraControllerPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<CameraController>().add_systems(
-            Update,
-            (camera_movement, camera_zoom, camera_drag_movement).run_if(not(egui_wants_any_input)),
-        );
+        app.init_resource::<CameraController>()
+            .register_type::<CameraController>()
+            .add_systems(
+                Update,
+                (camera_movement, camera_zoom, camera_drag_movement).run_if(not(egui_wants_any_input)),
+            );
     }
 }
 
